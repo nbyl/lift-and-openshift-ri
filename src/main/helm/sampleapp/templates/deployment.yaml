@@ -29,6 +29,11 @@ spec:
             httpGet:
               path: /
               port: {{ .Values.service.internalPort }}
+          env:
+            {{- range .Values.environment }}
+            - name:  {{ .name | title | quote }}
+              value: {{ .value | title | quote }}
+            {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
