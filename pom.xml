@@ -46,17 +46,11 @@
                 <groupId>io.fabric8</groupId>
                 <artifactId>fabric8-maven-plugin</artifactId>
                 <version>3.5.33</version>
-
                 <configuration>
                     <images>
                         <image>
                             <name>%g/%a:%v</name>
-                            <!--
-                            <name>fabric8:dmp-sample-dockerfile</name>
-                            <alias>application</alias>
-                            -->
                             <build>
-                                <!-- filter>@</filter-->
                                 <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
                                 <assembly>
                                     <descriptorRef>rootWar</descriptorRef>
@@ -72,7 +66,7 @@
                         <goals>
                             <goal>resource</goal>
                             <goal>build</goal>
-                            <!-- <goal>helm</goal> -->
+                            <goal>helm</goal>
                         </goals>
                     </execution>
                 </executions>
