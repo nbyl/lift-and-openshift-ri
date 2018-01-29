@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>SampleApp</groupId>
-    <artifactId>SampleApp</artifactId>
+    <groupId>jboss</groupId>
+    <artifactId>sampleapp</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>SampleApp</name>
@@ -15,7 +15,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
 
-        <fabric8.mode>kubernetes</fabric8.mode>
+        <!-- <fabric8.mode>kubernetes</fabric8.mode> -->
         <fabric8.build.strategy>docker</fabric8.build.strategy>
     </properties>
 
@@ -29,7 +29,7 @@
     </dependencies>
 
     <build>
-        <finalName>SampleApp</finalName>
+        <finalName>sampleapp</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

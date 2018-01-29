@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Deploys the sampleapp
+name: sampleapp
+version: 0.1.0
