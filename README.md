@@ -15,7 +15,7 @@ A sample app to be deployed on openshift environments
 ## Deployment
 
 Development Environment:
-    
+
     helm upgrade dev src/main/helm/sampleapp  -f src/main/helm/dev.yaml --install
 
 Production Environment:
