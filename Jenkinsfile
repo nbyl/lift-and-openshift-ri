@@ -2,6 +2,7 @@ try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
             stage('build') {
+                sh('mvn package')
                 //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
             stage('deploy') {
