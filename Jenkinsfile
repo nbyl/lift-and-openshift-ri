@@ -1,9 +1,15 @@
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
+
             stage('build') {
+                def releaseVersion = "1.0.${env.BUILD_NUMBER}"
+
                 sh('env | sort')
+
                 checkout scm
+
+                sh("mvn org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
                 sh('mvn package fabric8:build')
                 //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
