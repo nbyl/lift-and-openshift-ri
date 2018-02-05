@@ -1,0 +1,115 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: application-template
+message: |-
+  A pipeline definition, that will delegate the pipeline itself to the pipeline defined
+  in the git repository.
+metadata:
+  annotations:
+    openshift.io/display-name: Lift & Shift - RI
+    description: |-
+      This example showcases the delegation of the pipeline itself into the git Repository. It will
+      create a Jenkins Pipeline that will process the actual code from the git Repository of the application.
+    iconClass: java
+    tags: instant-app,jenkins
+  name: jenkins-pipeline-example
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: lift-and-openshift-ri
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    generation: 1
+    labels:
+      app: lift-and-openshift-ri
+    name: lift-and-openshift-ri
+  spec:
+    replicas: 1
+    selector:
+      app: lift-and-openshift-ri
+      deploymentconfig: lift-and-openshift-ri
+    strategy:
+      activeDeadlineSeconds: 21600
+      resources: {}
+      rollingParams:
+        intervalSeconds: 1
+        maxSurge: 25%
+        maxUnavailable: 25%
+        timeoutSeconds: 600
+        updatePeriodSeconds: 1
+      type: Rolling
+    template:
+      metadata:
+        labels:
+          app: lift-and-openshift-ri
+          deploymentconfig: lift-and-openshift-ri
+      spec:
+        containers:
+        - image: 172.30.1.1:5000/lift-and-openshift/lift-and-openshift-ri@sha256:1700233dd5d30d9f082572a35abcd6a12c6345905eb1272d309b861a8fe12dbe
+          imagePullPolicy: IfNotPresent
+          name: lift-and-openshift-ri
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          - containerPort: 9990
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+    test: false
+    triggers:
+    - type: ConfigChange
+    - imageChangeParams:
+        automatic: true
+        containerNames:
+        - lift-and-openshift-ri
+        from:
+          kind: ImageStreamTag
+          name: lift-and-openshift-ri:1.0.7
+          namespace: lift-and-openshift
+      type: ImageChange
+- apiVersion: v1
+  kind: Service
+  metadata:
+    labels:
+      app: lift-and-openshift-ri
+    name: lift-and-openshift-ri
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    - name: 9990-tcp
+      port: 9990
+      protocol: TCP
+      targetPort: 9990
+    selector:
+      app: lift-and-openshift-ri
+      deploymentconfig: lift-and-openshift-ri
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    name: lift-and-openshift-ri
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: lift-and-openshift-ri
+      weight: 100
+    wildcardPolicy: None
