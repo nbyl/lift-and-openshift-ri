@@ -4,7 +4,7 @@ try {
             stage('build') {
                 sh('env | sort')
                 checkout scm
-                sh('mvn package docker:build')
+                sh('mvn package fabric8:build')
                 //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
             stage('config') {
