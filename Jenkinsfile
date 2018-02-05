@@ -8,8 +8,6 @@ try {
 
                 sh('env | sort')
 
-                checkout scm
-
                 sh("mvn org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
                 sh('mvn package fabric8:build')
                 //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
@@ -25,6 +23,7 @@ try {
                 sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
             }
             stage('deploy') {
+                sh('find .')
                 sh('oc process -f src/main/openshift/application-template.yaml | oc apply -f -')
                 //openshiftDeploy(deploymentConfig: 'nodejs-mongodb-example')
             }
