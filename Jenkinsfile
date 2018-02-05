@@ -1,11 +1,11 @@
 try {
     timeout(time: 20, unit: 'MINUTES') {
-        node('nodejs') {
+        node('maven') {
             stage('build') {
-                openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
+                //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
             stage('deploy') {
-                openshiftDeploy(deploymentConfig: 'nodejs-mongodb-example')
+                //openshiftDeploy(deploymentConfig: 'nodejs-mongodb-example')
             }
         }
     }
