@@ -18,10 +18,11 @@ try {
                     //url: 'git@github.com:nbyl/container-configurator.git',
                     url: 'https://github.com/nbyl/container-configurator.git',
                     //credentialsId: 'minishift-github',
-                    branch: 'master'
+                    branch: 'master',
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'target/configuration']]
                 )
                 sh('oc delete secret ribn-dev-pi-config-secret --ignore-not-found=true')
-                sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
+                sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./target/configuration/environment.properties,./target/configuration/app/standalone/configuration/sso/sso.keystore')
             }
             stage('deploy') {
                 sh('find .')
