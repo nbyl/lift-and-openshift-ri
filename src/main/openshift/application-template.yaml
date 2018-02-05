@@ -50,7 +50,7 @@ objects:
           deploymentconfig: lift-and-openshift-ri
       spec:
         containers:
-        - image: 172.30.1.1:5000/lift-and-openshift/lift-and-openshift-ri@sha256:1700233dd5d30d9f082572a35abcd6a12c6345905eb1272d309b861a8fe12dbe
+        - image: '172.30.1.1:5000/lift-and-openshift-ri/lift-and-openshift-ri:1.0.10'
           imagePullPolicy: IfNotPresent
           name: lift-and-openshift-ri
           ports:
