@@ -25,6 +25,7 @@ try {
                 sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
             }
             stage('deploy') {
+                sh('oc process -f src/main/openshift/application-template.yaml | oc apply -f -')
                 //openshiftDeploy(deploymentConfig: 'nodejs-mongodb-example')
             }
         }
