@@ -27,3 +27,9 @@ First, login and create a project:
         oc process -f src/main/openshift/pipeline.yaml | oc apply -f -
 
 Afterwards, you can start the pipeline from the Web UI.
+
+## Development
+
+To make further developments in the build pipeline, you can create your own branch and build the project against it. To build a branch called `nbyl-devel`, create a new build configuration like this.
+
+        oc process -f src/main/openshift/pipeline.yaml -p NAME=devel -p BRANCH=nbyl-devel | oc apply -f -

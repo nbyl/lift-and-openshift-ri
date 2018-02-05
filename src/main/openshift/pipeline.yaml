@@ -25,6 +25,11 @@ parameters:
   name: SOURCE_REPOSITORY_URL
   required: true
   value: https://github.com/nbyl/lift-and-openshift-ri.git
+- description: The Branch to build.
+  displayName: Branch
+  name: BRANCH
+  required: true
+  value: master
 objects:
 - apiVersion: v1
   kind: BuildConfig
@@ -38,6 +43,7 @@ objects:
     source:
         git:
           uri: "${SOURCE_REPOSITORY_URL}"
+          ref: "${BRANCH}"
     strategy:
       jenkinsPipelineStrategy:
         jenkinsfilePath: Jenkinsfile
