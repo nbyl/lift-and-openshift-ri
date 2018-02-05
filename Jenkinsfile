@@ -1,6 +1,6 @@
 try {
     timeout(time: 20, unit: 'MINUTES') {
-        node('nodejs') {
+        node('maven') {
             stage('build') {
                 openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
