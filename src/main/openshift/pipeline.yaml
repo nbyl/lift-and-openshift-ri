@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: application-template-sample-pipeline
+message: |-
+  A pipeline definition, that will delegate the pipeline itself to the pipeline defined
+  in the git repository.
+metadata:
+  annotations:
+    openshift.io/display-name: Lift & Shift - RI
+    description: |-
+      This example showcases the delegation of the pipeline itself into the git Repository. It will
+      create a Jenkins Pipeline that will process the actual code from the git Repository of the application.
+    iconClass: icon-jenkins
+    tags: instant-app,jenkins
+  name: jenkins-pipeline-example
+parameters:
+- description: The name assigned to all of the frontend objects defined in this template.
+  displayName: Name
+  name: NAME
+  required: true
+  value: lift-and-openshift-ri
+- description: The URL of the repository with your application source code.
+  displayName: Git Repository URL
+  name: SOURCE_REPOSITORY_URL
+  required: true
+  value: https://github.com/nbyl/lift-and-openshift-ri.git
+objects:
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    annotations:
+      pipeline.alpha.openshift.io/uses: '[{"name": "${NAME}", "namespace": "", "kind": "DeploymentConfig"}]'
+    labels:
+      name: ${NAME}-pipeline
+    name: ${NAME}-pipeline
+  spec:
+    source:
+        git:
+          uri: "${SOURCE_REPOSITORY_URL}"
+    strategy:
+      jenkinsPipelineStrategy:
+        jenkinsfilePath: Jenkinsfile
+      type: JenkinsPipeline
+    triggers:
+    - github:
+        secret: secret101
+      type: GitHub
+    - generic:
+        secret: secret101
+      type: Generic

@@ -1,24 +1,29 @@
-# openshift-jee-sample (pi-ant version)
+# lift-and-openshift-ri
 
 A sample app to be deployed on openshift environments
 
 ## Prequisites
 
-- a working OpenShift Cluster
-- [Tiller](https://blog.openshift.com/getting-started-helm-openshift/)
+- a working OpenShift Cluster, e.g. [MiniShift](https://github.com/minishift/minishift)
 - OpenShift Client Tools installed
-- [Helm](https://helm.sh)
 
-## Build Image
+## Setup
 
-    mvn install
+### MiniShift
 
-## Deployment (Helm Version)
+If you want to use MiniShift please use at least 12 GB of RAM:
 
-Development Environment:
+        minishift start --vm-driver virtualbox --memory 12288MB
 
-    helm upgrade dev src/main/helm/sampleapp -f src/main/helm/dev.yaml --install
+### Pipeline
 
-Production Environment:
+First, login and create a project:
 
-    helm upgrade pro src/main/helm/sampleapp -f src/main/helm/pro.yaml --install
+        oc login
+        oc new-project lift-and-openshift-ri --display-name="Lift & OpenShift - Reference Implementation"
+
+ To setup the pipeline, process the template into cluster. This will create a pipeline which will use the Jenkinsfile from the git repository for further processing:
+
+        oc process -f src/main/openshift/pipeline.yaml | oc apply -f -
+
+Afterwards, you can start the pipeline from the Web UI.
