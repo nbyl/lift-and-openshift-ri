@@ -2,8 +2,9 @@ try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
             stage('build') {
+                sh('env | sort')
                 checkout scm
-                sh('mvn package')
+                sh('mvn package docker:build')
                 //openshiftBuild(buildConfig: 'nodejs-mongodb-example', showBuildLogs: 'true')
             }
             stage('config') {
