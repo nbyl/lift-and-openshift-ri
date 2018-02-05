@@ -3,6 +3,7 @@ try {
         node('maven') {
 
             stage('build') {
+                // TODO: we should really use the SHA1 commit hash here.
                 def releaseVersion = "1.0.${env.BUILD_NUMBER}"
 
                 sh('env | sort')
