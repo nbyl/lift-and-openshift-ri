@@ -2,9 +2,9 @@ try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
 
+            def releaseVersion = "1.0.${env.BUILD_NUMBER}"
             stage('build') {
                 // TODO: we should really use the SHA1 commit hash here.
-                def releaseVersion = "1.0.${env.BUILD_NUMBER}"
 
                 dir('scm') {
                     checkout scm
