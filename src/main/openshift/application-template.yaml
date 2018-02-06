@@ -55,7 +55,7 @@ objects:
           deploymentconfig: ${APPLICATION_NAME}
       spec:
         containers:
-        - image: " "
+        - image: openshift/origin-pod
           imagePullPolicy: IfNotPresent
           name: ${APPLICATION_NAME}
           ports:
@@ -81,7 +81,6 @@ objects:
         from:
           kind: ImageStreamTag
           name: ${APPLICATION_NAME}:${IMAGE_VERSION}
-          namespace: lift-and-openshift
       type: ImageChange
 - apiVersion: v1
   kind: Service
@@ -91,14 +90,10 @@ objects:
     name: ${APPLICATION_NAME}
   spec:
     ports:
-    - name: 8080-tcp
-      port: 8080
+    - name: http-tcp
+      port: 80
       protocol: TCP
       targetPort: 8080
-    - name: 9990-tcp
-      port: 9990
-      protocol: TCP
-      targetPort: 9990
     selector:
       app: ${APPLICATION_NAME}
       deploymentconfig: ${APPLICATION_NAME}
@@ -112,7 +107,7 @@ objects:
     name: ${APPLICATION_NAME}
   spec:
     port:
-      targetPort: 8080-tcp
+      targetPort: http-tcp
     to:
       kind: Service
       name: ${APPLICATION_NAME}

@@ -25,8 +25,8 @@ try {
             }
             stage('deploy') {
                 dir('scm') {
-                    sh('find .')
                     sh("oc process -f src/main/openshift/application-template.yaml -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
+                    openshiftDeploy(depCfg: 'lift-and-openshift-ri')
                 }
             }
         }
