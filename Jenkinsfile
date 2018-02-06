@@ -17,9 +17,7 @@ try {
             stage('config') {
                 dir('config') {
                     git(
-                        //url: 'git@github.com:nbyl/container-configurator.git',
                         url: 'https://github.com/nbyl/container-configurator.git',
-                        //credentialsId: 'minishift-github',
                         branch: 'master'
                     )
                     sh('oc delete secret ribn-dev-pi-config-secret --ignore-not-found=true')
