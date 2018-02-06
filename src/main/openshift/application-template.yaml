@@ -55,7 +55,8 @@ objects:
           deploymentconfig: ${APPLICATION_NAME}
       spec:
         containers:
-        - imagePullPolicy: IfNotPresent
+        - image: " "
+          imagePullPolicy: IfNotPresent
           name: ${APPLICATION_NAME}
           ports:
           - containerPort: 8080
