@@ -61,6 +61,13 @@ objects:
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
+          - env:
+            - name: JGROUPS_PING_PROTOCOL
+              value: openshift.KUBE_PING
+            - name: OPENSHIFT_KUBE_PING_NAMESPACE
+              value: lift-and-openshift-ri
+            - name: OPENSHIFT_KUBE_PING_LABELS
+              value: lift-and-openshift-ri
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler

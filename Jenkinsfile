@@ -15,20 +15,20 @@ try {
                 }
             }
             stage('config') {
-            //    dir('config') {
-            //        git(
-            //            url: 'https://github.com/nbyl/container-configurator.git',
-            //            branch: 'master'
-            //        )
-            //        sh('oc delete secret ribn-dev-pi-config-secret --ignore-not-found=true')
-            //        sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
-            //    }
+                dir('config') {
+                    git(
+                        url: 'https://github.com/nbyl/container-configurator.git',
+                        branch: 'rgr-devel'
+                    )
+                    sh('oc delete secret ribn-dev-pi-config-secret --ignore-not-found=true')
+                    sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
+                }
             }
             stage('deploy') {
-            //    dir('scm') {
-            //        sh('find .')
-            //        sh('oc process -f src/main/openshift/application-template.yaml | oc apply -f -')
-            //    }
+                dir('scm') {
+                    sh('find .')
+                    sh('oc process -f src/main/openshift/application-template.yaml | oc apply -f -')
+                }
             }
         }
     }
