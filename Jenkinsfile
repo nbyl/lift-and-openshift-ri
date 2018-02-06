@@ -6,7 +6,6 @@ try {
                 // TODO: we should really use the SHA1 commit hash here.
                 def releaseVersion = "1.0.${env.BUILD_NUMBER}"
 
-                //sh('env | sort')
                 dir('scm') {
                     checkout scm
 
@@ -27,7 +26,7 @@ try {
             stage('deploy') {
                 dir('scm') {
                     sh('find .')
-                    sh('oc process -f src/main/openshift/application-template.yaml | oc apply -f -')
+                    sh("oc process -f src/main/openshift/application-template.yaml -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
                 }
             }
         }
