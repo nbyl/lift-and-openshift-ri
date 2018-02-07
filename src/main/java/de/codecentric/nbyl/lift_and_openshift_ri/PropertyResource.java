@@ -18,11 +18,11 @@ public class PropertyResource {
     public JsonObject getProperties() throws IOException {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        loadProperties()
-                .entrySet()
-                .stream()
-                .forEach(entry -> builder.add((String) entry.getKey(),
-                        (String) entry.getValue()));
+        Properties properties = loadProperties();
+
+        for(String key: properties.stringPropertyNames()) {
+            builder.add(key, properties.getProperty(key));
+        }
 
         return builder.build();
     }
