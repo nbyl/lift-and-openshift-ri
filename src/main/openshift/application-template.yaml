@@ -72,7 +72,7 @@ objects:
             - name: OPENSHIFT_KUBE_PING_NAMESPACE
               value: lift-and-openshift-ri
             - name: OPENSHIFT_KUBE_PING_LABELS
-              value: lift-and-openshift-ri
+              value: app=lift-and-openshift-ri
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
