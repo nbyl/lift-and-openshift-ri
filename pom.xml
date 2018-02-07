@@ -12,8 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 
         <fabric8.build.strategy>docker</fabric8.build.strategy>
     </properties>
@@ -68,6 +68,18 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>1.2.1.Final</version>
+                <configuration>
+                    <filename>ROOT.war</filename>
+                    <env>
+                        <CONFIG_PATH>${basedir}</CONFIG_PATH>
+                    </env>
+                </configuration>
             </plugin>
         </plugins>
     </build>
