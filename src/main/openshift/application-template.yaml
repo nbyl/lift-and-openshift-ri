@@ -20,7 +20,12 @@ parameters:
   name: APPLICATION_NAME
   required: true
   value: lift-and-openshift-ri
-- description: The name assigned to all of the frontend objects defined in this template.
+- description: The version of the application image to use.
+  displayName: Image Version
+  name: IMAGE_NAME
+  required: true
+  value: lift-and-openshift-ri
+- description: The version of the application image to use.
   displayName: Image Version
   name: IMAGE_VERSION
   required: true
@@ -108,7 +113,7 @@ objects:
         - ${APPLICATION_NAME}
         from:
           kind: ImageStreamTag
-          name: ${APPLICATION_NAME}:${IMAGE_VERSION}
+          name: ${IMAGE_NAME}:${IMAGE_VERSION}
       type: ImageChange
 - apiVersion: v1
   kind: Service
