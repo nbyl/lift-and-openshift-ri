@@ -38,6 +38,10 @@ try {
                     sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test org.apache.maven.plugins:maven-failsafe-plugin:verify -P acceptance-test -DacceptanceTest.baseUri=http://laor-stage")
                 }
             }
+
+            stage('Integration Test - teardown stage') {
+                sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc delete -f -")
+            }
         }
     }
 } catch (err) {
