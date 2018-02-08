@@ -62,7 +62,7 @@ try {
             stage('Production - deploy application') {
                 dir('scm') {
                     sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName} -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
-                    openshiftDeploy(depCfg: "${applicationName}-stage")
+                    openshiftDeploy(depCfg: "${applicationName}")
                 }
             }
 
