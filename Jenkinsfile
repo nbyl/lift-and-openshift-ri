@@ -40,7 +40,9 @@ try {
             }
 
             stage('Integration Test - teardown stage') {
-                sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc delete -f -")
+                dir('scm') {
+                    sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc delete -f -")
+                }
             }
         }
     }
