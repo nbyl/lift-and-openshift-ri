@@ -3,9 +3,9 @@ try {
         node('maven') {
 
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
-            def applicationName = "lift-and-openshift-ri"
+            def applicationName = "laor"
 
-            stage('build') {
+            stage('Build') {
                 // TODO: we should really use the SHA1 commit hash here.
 
                 dir('scm') {
@@ -28,14 +28,14 @@ try {
             }
             stage('Integration Test - deploy application') {
                 dir('scm') {
-                    sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName} -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
+                    sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
                     openshiftDeploy(depCfg: applicationName)
                 }
             }
 
             stage('Integration Test - run tests') {
                 dir('scm') {
-                    sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test -P acceptance-test")
+                    sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test org.apache.maven.plugins:maven-failsafe-plugin:verify -P acceptance-test")
                 }
             }
         }
