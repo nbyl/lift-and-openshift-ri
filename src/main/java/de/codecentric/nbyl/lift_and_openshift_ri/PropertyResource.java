@@ -44,7 +44,7 @@ public class PropertyResource {
 
     private Properties loadGitProperties() throws IOException {
         Properties properties = new Properties();
-        try (final InputStream stream = this.getClass().getResourceAsStream("git.properties")) {
+        try (final InputStream stream = getClass().getClassLoader().getResourceAsStream("git.properties")) {
             properties.load(stream);
         }
         return properties;
@@ -59,5 +59,4 @@ public class PropertyResource {
 
         return builder.build();
     }
-
 }
