@@ -45,9 +45,9 @@ try {
                 }
             }
 
-            stage('Ask for promotion') {
-                input "Do you want to deploy ${applicationName} to production?"
-            }
+//            stage('Ask for promotion') {
+//                input "Do you want to deploy ${applicationName} to production?"
+//            }
 
             stage('Production - deploy configuration') {
                 dir('config') {
