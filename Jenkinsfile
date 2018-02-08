@@ -35,7 +35,7 @@ try {
 
             stage('Integration Test - run tests') {
                 dir('scm') {
-                    sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test org.apache.maven.plugins:maven-failsafe-plugin:verify -P acceptance-test")
+                    sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test org.apache.maven.plugins:maven-failsafe-plugin:verify -P acceptance-test -DacceptanceTest.baseUri=http://laor-stage")
                 }
             }
         }
