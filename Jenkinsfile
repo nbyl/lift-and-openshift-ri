@@ -1,8 +1,7 @@
  String getVersion() {
      def lastTag = sh(returnStdout: true, script: 'git describe --abbrev=0 --tags')
-     def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag}.. --count")
+     def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag.trim()}.. --count")
  }
-
 
 try {
     timeout(time: 20, unit: 'MINUTES') {
