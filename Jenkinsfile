@@ -1,3 +1,9 @@
+ String getVersion() {
+     def lastTag = sh(returnStdout: true, script: 'git describe --abbrev=0 --tags')
+     def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag}.. --count")
+ }
+
+
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
@@ -10,6 +16,7 @@ try {
 
                 dir('scm') {
                     checkout scm
+                    releaseVersion = getVersion()
 
                     sh("mvn -B org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
                     sh('mvn -B package fabric8:build')
