@@ -1,7 +1,11 @@
- String getVersion() {
-     def lastTag = sh(returnStdout: true, script: 'git describe --abbrev=0 --tags')
-     def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag.trim()}.. --count")
- }
+String getVersion() {
+    def lastTag = sh(returnStdout: true, script: 'git describe --abbrev=0 --tags')
+    def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag.trim()}.. --count")
+    def commitId = sh(returnStdout: true, script: "git rev-parse --short HEAD")
+    def buildTimestamp = new Date().format("yyyyMMddHHmmss")
+
+    return "${lastTag.trim()}.${commitsSinceTag.trim()}+${commitId.trim()}-${buildTimestamp}"
+}
 
 try {
     timeout(time: 20, unit: 'MINUTES') {
