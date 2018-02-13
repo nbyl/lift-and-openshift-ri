@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/jboss-eap-7/eap70-openshift:latest
+FROM registry.access.redhat.com/jboss-eap-7/eap71-openshift:latest
 
 USER root:root
 RUN chmod -R 777 /opt/eap/standalone/
