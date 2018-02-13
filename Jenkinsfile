@@ -4,7 +4,7 @@ String getVersion() {
     def commitId = sh(returnStdout: true, script: "git rev-parse --short HEAD")
     def buildTimestamp = new Date().format("yyyyMMddHHmmss")
 
-    return "${lastTag.trim()}.${commitsSinceTag.trim()}-${commitId.trim()}-${buildTimestamp}"
+    return "${lastTag.trim()}.${commitsSinceTag.trim()}-${buildTimestamp}-${commitId.trim()}"
 }
 
 try {
@@ -15,8 +15,6 @@ try {
             def applicationName = "laor"
 
             stage('Build') {
-                // TODO: we should really use the SHA1 commit hash here.
-
                 dir('scm') {
                     checkout scm
                     releaseVersion = getVersion()
