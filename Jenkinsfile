@@ -4,7 +4,7 @@ String getVersion() {
     def commitId = sh(returnStdout: true, script: "git rev-parse --short HEAD")
     def buildTimestamp = new Date().format("yyyyMMddHHmmss")
 
-    return "${lastTag.trim()}.${commitsSinceTag.trim()}+${commitId.trim()}-${buildTimestamp}"
+    return "${lastTag.trim()}.${commitsSinceTag.trim()}-${commitId.trim()}-${buildTimestamp}"
 }
 
 try {
