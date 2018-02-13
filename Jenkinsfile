@@ -15,7 +15,6 @@ try {
                     sh('mvn -B package fabric8:build')
                 }
             }
-<<<<<<< HEAD
             stage('config') {
             //    dir('config') {
             //        git(
@@ -25,51 +24,6 @@ try {
             //        sh('oc delete secret ribn-dev-pi-config-secret --ignore-not-found=true')
             //        sh('oc create secret generic ribn-dev-pi-config-secret --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore')
             //    }
-=======
-
-            stage('Integration Test - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-stage-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-stage-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
-                }
-            }
-            stage('Integration Test - deploy application') {
-                dir('scm') {
-                    sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
-                    openshiftDeploy(depCfg: "${applicationName}-stage")
-                }
-            }
-
-            stage('Integration Test - run tests') {
-                dir('scm') {
-                    sh("mvn -B org.apache.maven.plugins:maven-failsafe-plugin:integration-test org.apache.maven.plugins:maven-failsafe-plugin:verify -P acceptance-test -DacceptanceTest.baseUri=http://laor-stage")
-                }
-            }
-
-            stage('Integration Test - teardown stage') {
-                dir('scm') {
-                    sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc delete -f -")
-                }
-            }
-
-            stage('Ask for promotion') {
-                input "Do you want to deploy ${applicationName} to production?"
-            }
-
-            stage('Production - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
-                }
->>>>>>> d487b91a0a3a5c901d95fee313476d99ddf8aed1
             }
             stage('Production - deploy application') {
                 dir('scm') {

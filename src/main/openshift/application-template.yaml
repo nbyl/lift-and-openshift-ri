@@ -79,6 +79,7 @@ objects:
             - name: OPENSHIFT_KUBE_PING_NAMESPACE
               value: lift-and-openshift-ri
             - name: OPENSHIFT_KUBE_PING_LABELS
+<<<<<<< HEAD
               value: app=lift-and-openshift-ri
           readinessProbe:
             failureThreshold: 3
@@ -108,6 +109,9 @@ objects:
           - name: config
             secret:
               secretName: ${APPLICATION_NAME}-config
+=======
+              value: lift-and-openshift-ri
+>>>>>>> 71645b9453168cc422228aa5686ef7bd85e29c43
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
