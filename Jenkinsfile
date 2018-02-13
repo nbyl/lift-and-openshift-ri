@@ -53,6 +53,8 @@ try {
                 }
             }
 
+            // TODO: push image to artifactory here
+
 //            stage('Ask for promotion') {
 //                input "Do you want to deploy ${applicationName} to production?"
 //            }
