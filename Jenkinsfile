@@ -1,3 +1,12 @@
+String getVersion() {
+    def lastTag = sh(returnStdout: true, script: 'git describe --abbrev=0 --tags')
+    def commitsSinceTag = sh(returnStdout: true, script: "git rev-list ${lastTag.trim()}.. --count")
+    def commitId = sh(returnStdout: true, script: "git rev-parse --short HEAD")
+    def buildTimestamp = new Date().format("yyyyMMddHHmmss")
+
+    return "${lastTag.trim()}.${commitsSinceTag.trim()}-${buildTimestamp}-${commitId.trim()}"
+}
+
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
@@ -6,10 +15,9 @@ try {
             def applicationName = "laor"
 
             stage('Build') {
-                // TODO: we should really use the SHA1 commit hash here.
-
                 dir('scm') {
                     checkout scm
+                    releaseVersion = getVersion()
 
                     sh("mvn -B org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
                     sh('mvn -B package fabric8:build')
@@ -45,9 +53,11 @@ try {
                 }
             }
 
-            stage('Ask for promotion') {
-                input "Do you want to deploy ${applicationName} to production?"
-            }
+            // TODO: push image to artifactory here
+
+//            stage('Ask for promotion') {
+//                input "Do you want to deploy ${applicationName} to production?"
+//            }
 
             stage('Production - deploy configuration') {
                 dir('config') {
