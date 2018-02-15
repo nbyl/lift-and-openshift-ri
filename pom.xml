@@ -91,15 +91,6 @@
                         </image>
                     </images>
                 </configuration>
-
-                <executions>
-                    <execution>
-                        <id>fabric8</id>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
