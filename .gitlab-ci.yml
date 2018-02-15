@@ -79,8 +79,7 @@ test:
   image: maven:3.5-jdk-8-alpine
   script:
     - setup_test_db
-    - cp -R . /tmp/app
-    - /bin/herokuish buildpack test
+    - mvn verify
   only:
     - branches
 
