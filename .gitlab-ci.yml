@@ -431,6 +431,7 @@ production:
   }
 
   function ensure_namespace() {
+    env | sort
     kubectl describe namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
   }
 
