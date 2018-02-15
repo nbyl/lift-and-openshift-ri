@@ -39,6 +39,13 @@ variables:
   HELM_VERSION: 2.6.1
   CODECLIMATE_VERSION: 0.69.0
 
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN -Dorg.slf4j.simpleLogger.showDateTime=true -Djava.awt.headless=true"
+  MAVEN_CLI_OPTS: "--batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+
+cache:
+  paths:
+    - .m2/repository
+
 stages:
   - build
   - test
@@ -52,7 +59,7 @@ stages:
 
 build:
   stage: build
-  image: maven:3.5-jdk-7-alpine
+  image: docker:git
   services:
   - docker:dind
   variables:
@@ -69,7 +76,7 @@ test:
   variables:
     POSTGRES_DB: test
   stage: test
-  image: gliderlabs/herokuish:latest
+  image: maven:3.5-jdk-8-alpine
   script:
     - setup_test_db
     - cp -R . /tmp/app
@@ -440,19 +447,23 @@ production:
   }
 
   function build() {
+      if [[ -n "$CI_REGISTRY_USER" ]]; then
+        echo "Logging to GitLab Container Registry with CI credentials..."
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        echo ""
+      fi
 
-    if [[ -n "$CI_REGISTRY_USER" ]]; then
-      echo "Logging to GitLab Container Registry with CI credentials..."
-      docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+      echo "Building Dockerfile-based application..."
+      docker run -it --rm --env MAVEN_OPTS="${MAVEN_OPTS}" --name $CI_CONTAINER_NAME -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven maven:3.5-jdk-8-alpine mvn -DskipTests clean dependency:list install ${MAVEN_CLI_OPTS}
       echo ""
-    fi
 
-    mvn -B org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${CI_APPLICATION_TAG}
-    mvn -DskipTests clean dependency:list install fabric8:build -Ddocker.image.name=${$CI_APPLICATION_REPOSITORY} -Ddocker.image.version=${CI_APPLICATION_TAG}
+      echo "Building Dockerfile-based application..."
+      docker build -t "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG" .
+      echo ""
 
-    echo "Pushing to GitLab Container Registry..."
-    docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
-    echo ""
+      echo "Pushing to GitLab Container Registry..."
+      docker push "$CI_APPLICATION_REPOSITORY:$CI_APPLICATION_TAG"
+      echo ""
   }
 
   function install_tiller() {
