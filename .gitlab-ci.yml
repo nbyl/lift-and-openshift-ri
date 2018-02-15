@@ -454,7 +454,7 @@ production:
       fi
 
       echo "Building Dockerfile-based application..."
-      docker run -it --rm --env MAVEN_OPTS="${MAVEN_OPTS}" --name $CI_CONTAINER_NAME -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven maven:3.5-jdk-8-alpine mvn -DskipTests clean dependency:list install ${MAVEN_CLI_OPTS}
+      docker run --rm --env MAVEN_OPTS="${MAVEN_OPTS}" --name $CI_CONTAINER_NAME -v "$PWD":/usr/src/mymaven -w /usr/src/mymaven maven:3.5-jdk-8-alpine mvn -DskipTests clean dependency:list install ${MAVEN_CLI_OPTS}
       echo ""
 
       echo "Building Dockerfile-based application..."
