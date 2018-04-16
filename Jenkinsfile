@@ -47,7 +47,7 @@ try {
 
             stage('Build Docker Image') {
                 dir('scm') {
-                    sh("./mvnw ${mavenCliOptions} install -Popenshift -Pkolt -DskipTests")
+                    sh("./mvnw ${mavenCliOptions} install -DskipTests")
                 }
             }
 
