@@ -10,6 +10,7 @@ String getVersion() {
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
+            def mavenCliOptions = env.MAVEN_CLI_OPTIONS ? env.MAVEN_CLI_OPTIONS : "-B"
 
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
             def applicationName = "laor"
