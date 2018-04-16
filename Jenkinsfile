@@ -46,6 +46,7 @@ def mavenNode(Map parameters = [:], body) {
                             image: "${dockerImage}",
                             resourceLimitMemory: '640Mi')
             ]) {
+        sh 'echo hello world!'
         //body()
     }
 }
