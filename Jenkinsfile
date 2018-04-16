@@ -30,7 +30,9 @@ def mavenNode(Map parameters = [:], body) {
     def dockerImage = 'docker:dind'
     def jnlpImage = 'openshift/jenkins-slave-maven-centos7:v3.10'
 
-    podTemplate(cloud: cloud, label: 'maven', serviceAccount: 'jenkins',
+    podTemplate(cloud: cloud,
+            label: 'maven',
+            serviceAccount: 'jenkins',
             containers: [
                     containerTemplate(
                             name: 'jnlp',
@@ -46,7 +48,9 @@ def mavenNode(Map parameters = [:], body) {
                             image: "${dockerImage}",
                             resourceLimitMemory: '640Mi')
             ]) {
-        sh 'echo hello world!'
+        node('maven') {
+            sh 'echo hello world!'
+        }
         //body()
     }
 }
