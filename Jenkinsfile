@@ -44,9 +44,9 @@ def mavenNode(Map parameters = [:], body) {
                     containerTemplate(
                             name: 'docker',
                             image: "${dockerImage}",
-                            resourceLimitMemory: '640Mi')]) {
-
-        body()
+                            resourceLimitMemory: '640Mi')
+            ]) {
+        //body()
     }
 }
 
