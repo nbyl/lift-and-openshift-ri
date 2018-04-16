@@ -7,6 +7,23 @@ String getVersion() {
     return "${lastTag.trim()}.${commitsSinceTag.trim()}-${buildTimestamp}-${commitId.trim()}"
 }
 
+def deployConfiguration(body) {
+    // evaluate the body block, and collect configuration into the object
+    def config = [:]
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = config
+    body()
+
+    dir('config') {
+        git(
+                url: config.gitUrl,
+                branch: config.gitBranch
+        )
+
+        sh("oc create secret generic ${config.name}-config --from-file=./ --dry-run=true -o yaml | oc apply -f -")
+    }
+}
+
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
@@ -14,6 +31,8 @@ try {
 
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
             def applicationName = "laor"
+
+            def configRepositoryUrl = env.CONFIG_REPOSITORY_URL ? env.CONFIG_REPOSITORY_URL : "https://github.com/nbyl/container-configurator.git"
 
             stage('Prepare Build') {
                 dir('scm') {
@@ -52,15 +71,13 @@ try {
             }
 
             stage('Integration Test - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-stage-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-stage-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
+                deployConfiguration {
+                    gitUrl = configRepositoryUrl
+                    gitBranch = 'master'
+                    name = "${applicationName}-stage"
                 }
             }
+
             stage('Integration Test - deploy application') {
                 dir('scm') {
                     sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
@@ -87,13 +104,10 @@ try {
 //            }
 
             stage('Production - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
+                deployConfiguration {
+                    gitUrl = configRepositoryUrl
+                    gitBranch = 'master'
+                    name = "${applicationName}"
                 }
             }
             stage('Production - deploy application') {
