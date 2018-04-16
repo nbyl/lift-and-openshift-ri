@@ -16,6 +16,9 @@
         <maven.compiler.target>1.7</maven.compiler.target>
 
         <fabric8.build.strategy>docker</fabric8.build.strategy>
+
+        <docker.image.name>${project.artifactId}</docker.image.name>
+        <docker.image.version>${project.version}</docker.image.version>
     </properties>
 
     <dependencies>
@@ -81,7 +84,8 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>%g/%a:%v</name>
+                            <!-- <name>%g/%a:%v</name> -->
+                            <name>${docker.image.name}:${docker.image.version}</name>
                             <build>
                                 <dockerFileDir>${project.basedir}/src/main/docker</dockerFileDir>
                                 <assembly>
@@ -94,7 +98,8 @@
 
                 <executions>
                     <execution>
-                        <id>fabric8</id>
+                        <id>dockerbuild</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>

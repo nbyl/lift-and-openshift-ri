@@ -7,33 +7,77 @@ String getVersion() {
     return "${lastTag.trim()}.${commitsSinceTag.trim()}-${buildTimestamp}-${commitId.trim()}"
 }
 
+def deployConfiguration(body) {
+    // evaluate the body block, and collect configuration into the object
+    def config = [:]
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = config
+    body()
+
+    dir('config') {
+        git(
+                url: config.gitUrl,
+                branch: config.gitBranch
+        )
+
+        sh("oc create secret generic ${config.name}-config --from-file=./ --dry-run=true -o yaml | oc apply -f -")
+    }
+}
+
 try {
     timeout(time: 20, unit: 'MINUTES') {
         node('maven') {
+            def mavenCliOptions = env.MAVEN_CLI_OPTIONS ? env.MAVEN_CLI_OPTIONS : "-B"
 
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
             def applicationName = "laor"
 
-            stage('Build') {
+            def configRepositoryUrl = env.CONFIG_REPOSITORY_URL ? env.CONFIG_REPOSITORY_URL : "https://github.com/nbyl/container-configurator.git"
+
+            stage('Prepare Build') {
                 dir('scm') {
-                    checkout scm
+                    //checkout scm
+                    checkout([
+                            $class                           : 'GitSCM',
+                            branches                         : scm.branches,
+                            doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+                            extensions                       : scm.extensions + [[$class: 'CloneOption', noTags: false, reference: '']],
+                            submoduleCfg                     : [],
+                            userRemoteConfigs                : scm.userRemoteConfigs
+                    ])
                     releaseVersion = getVersion()
 
-                    sh("mvn -B org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
-                    sh('mvn -B package fabric8:build')
+                    sh("./mvnw ${mavenCliOptions} org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
+                }
+            }
+
+            stage('Test') {
+                dir('scm') {
+                    //try {
+                    // TODO: re-activate tests on mega jenkins
+                    //sh("./mvnw ${mavenCliOptions} test")
+                    //} finally {
+                    //    junit 'impl/**/target/surefire-reports/*.xml'
+                    //}
+                }
+            }
+
+            // TODO: sonar, versioneye, ...
+
+            stage('Build Docker Image') {
+                dir('scm') {
+                    sh("./mvnw ${mavenCliOptions} install -DskipTests")
                 }
             }
 
             stage('Integration Test - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-stage-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-stage-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
+                deployConfiguration {
+                    gitUrl = configRepositoryUrl
+                    gitBranch = 'master'
+                    name = "${applicationName}-stage"
                 }
             }
+
             stage('Integration Test - deploy application') {
                 dir('scm') {
                     sh("oc process -f src/main/openshift/application-template.yaml -p APPLICATION_NAME=${applicationName}-stage -p IMAGE_VERSION=${releaseVersion}| oc apply -f -")
@@ -60,13 +104,10 @@ try {
 //            }
 
             stage('Production - deploy configuration') {
-                dir('config') {
-                    git(
-                            url: 'https://github.com/nbyl/container-configurator.git',
-                            branch: 'master'
-                    )
-                    sh("oc delete secret ${applicationName}-config --ignore-not-found=true")
-                    sh("oc create secret generic ${applicationName}-config --from-file=./configuration/environment.properties,./configuration/app/standalone/configuration/sso/sso.keystore")
+                deployConfiguration {
+                    gitUrl = configRepositoryUrl
+                    gitBranch = 'master'
+                    name = "${applicationName}"
                 }
             }
             stage('Production - deploy application') {
