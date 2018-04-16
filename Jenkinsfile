@@ -14,13 +14,39 @@ try {
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
             def applicationName = "laor"
 
-            stage('Build') {
+            stage('Prepare Build') {
                 dir('scm') {
-                    checkout scm
+                    //checkout scm
+                    checkout([
+                            $class                           : 'GitSCM',
+                            branches                         : scm.branches,
+                            doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+                            extensions                       : scm.extensions + [[$class: 'CloneOption', noTags: false, reference: '']],
+                            submoduleCfg                     : [],
+                            userRemoteConfigs                : scm.userRemoteConfigs
+                    ])
                     releaseVersion = getVersion()
 
-                    sh("mvn -B org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
-                    sh('mvn -B package fabric8:build')
+                    sh("./mvnw ${mavenCliOptions} org.codehaus.mojo:versions-maven-plugin:2.2:set -U -DnewVersion=${releaseVersion}")
+                }
+            }
+
+            stage('Test') {
+                dir('scm') {
+                    //try {
+                    // TODO: re-activate tests on mega jenkins
+                    //sh("./mvnw ${mavenCliOptions} test")
+                    //} finally {
+                    //    junit 'impl/**/target/surefire-reports/*.xml'
+                    //}
+                }
+            }
+
+            // TODO: sonar, versioneye, ...
+
+            stage('Build Docker Image') {
+                dir('scm') {
+                    sh("./mvnw ${mavenCliOptions} install -Popenshift -Pkolt -DskipTests")
                 }
             }
 
