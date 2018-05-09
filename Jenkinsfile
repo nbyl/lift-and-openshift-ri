@@ -27,11 +27,10 @@ def deployConfiguration(body) {
 def mavenNode(Map parameters = [:], body) {
     def cloud = 'openshift'
 
-    def dockerImage = 'docker:dind'
     def jnlpImage = 'openshift/jenkins-slave-maven-centos7:v3.10'
 
     podTemplate(cloud: cloud,
-            label: 'maven',
+            label: 'laor-maven',
             serviceAccount: 'jenkins',
             containers: [
                     containerTemplate(
@@ -39,16 +38,10 @@ def mavenNode(Map parameters = [:], body) {
                             image: "${jnlpImage}",
                             args: '${computer.jnlpmac} ${computer.name}',
                             workingDir: '/home/jenkins/',
-                            resourceLimitMemory: '1024Mi',
-                            envVars: [
-                                    envVar(key: 'DOCKER_HOST', value: 'tcp://localhost:2375'),
-                            ]),
-                    containerTemplate(
-                            name: 'docker',
-                            image: "${dockerImage}",
-                            resourceLimitMemory: '640Mi')
+                            resourceLimitMemory: '1024Mi'
+                    )
             ]) {
-        node('maven') {
+        node('laor-maven') {
             sh 'echo hello world!'
         }
         //body()
@@ -57,7 +50,8 @@ def mavenNode(Map parameters = [:], body) {
 
 try {
     timeout(time: 20, unit: 'MINUTES') {
-        node('maven') {
+        mavenNode {
+            //node('maven') {
             def mavenCliOptions = env.MAVEN_CLI_OPTIONS ? env.MAVEN_CLI_OPTIONS : "-B"
 
             def releaseVersion = "1.0.${env.BUILD_NUMBER}"
